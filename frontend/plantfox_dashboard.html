@@ -2240,10 +2240,16 @@ async function logCare(){
 // ═══════════════════════════════════════
 // PLANT CATALOG / ADD
 // ═══════════════════════════════════════
+const DEMO_CATALOG=[
+  {id:'demo-monstera',common_name:'Monstera Deliciosa',scientific_name:'Monstera deliciosa',category:'tropical',difficulty_level:'easy'},
+  {id:'demo-snake-plant',common_name:'Snake Plant',scientific_name:'Dracaena trifasciata',category:'houseplant',difficulty_level:'easy'},
+  {id:'demo-basil',common_name:'Sweet Basil',scientific_name:'Ocimum basilicum',category:'herb',difficulty_level:'easy'}
+];
 function openAddPlant(){selCatPlant=null;document.getElementById('cat-search').value='';searchCatalog();openModal('modal-add');}
 async function searchCatalog(){
   if(!state.catalog.length){
-    state.catalog=await api('GET','/plants/?limit=100')||[];
+    state.catalog=await api('GET','/plants/?limit=100')||DEMO_CATALOG;
+    if(!state.catalog.length)state.catalog=DEMO_CATALOG;
   }
   const q=document.getElementById('cat-search').value.toLowerCase();
   const res=q?state.catalog.filter(p=>(p.common_name||'').toLowerCase().includes(q)||(p.scientific_name||'').toLowerCase().includes(q)):state.catalog;
