@@ -1,3 +1,3 @@
 const CONFIG = {
-  API: "https://key-arkansas-salvador-syndrome.trycloudflare.com"
+  API: "https://hepatitis-when-nsw-equilibrium.trycloudflare.com"
 };
