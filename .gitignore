@@ -1,0 +1,70 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+venv/
+ENV/
+env/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+*.err.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Backend specific
+backend/__pycache__/
+backend/*.log
+backend/*.err.log
+backend/plantfox.db
+backend/.pytest_cache/
+backend/crop_data/
+backend/plant_data/
+backend/sensor_data/
+
+# Node modules (if any)
+node_modules/
+package-lock.json
+
+# Cloudflare
+cloudflared.exe
+
+# Test files (root level)
+test_*.py
+
+# Sensitive files
+api keys and things.txt

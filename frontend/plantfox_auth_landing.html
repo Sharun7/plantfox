@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<script src="config.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PlantFox — Join the Sanctuary</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16a34a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PlantFox">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --fox-50:#fff5ee;--fox-100:#ffe8d5;--fox-500:#ea6d1e;--fox-600:#c45512;--fox-700:#9a3f08;
+  --gr-50:#eef8f2;--gr-100:#d1f0de;--gr-200:#a3dfc0;--gr-300:#5cc68a;
+  --gr-400:#28a85a;--gr-500:#16a34a;--gr-600:#14813b;--gr-700:#0e5e2b;
+  --ink:#1a1a1a;--ink2:#3d3d3d;--ink3:#7a7a7a;--ink4:#b8b8b8;
+  --bg:#eef8f2;--surface:#fff;
+  --border:rgba(22,163,74,.15);--border2:rgba(22,163,74,.25);
+  --clay-sm:0 2px 0 rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.06);
+  --clay-white:0 2px 0 rgba(0,0,0,.08),0 6px 20px rgba(0,0,0,.07);
+  --clay-xl:0 4px 0 rgba(0,0,0,.09),0 12px 40px rgba(0,0,0,.10);
+  --clay-green:0 3px 0 rgba(14,94,43,.45),0 8px 24px rgba(22,163,74,.2);
+  --r:16px;--r-lg:22px;--r-xl:28px;--r-2xl:40px;--r-pill:999px;
+  --font:'DM Sans',sans-serif;
+  --ease-clay:cubic-bezier(.34,1.56,.64,1);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --transition:.2s ease;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;font-size:16px;}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;position:relative;overflow-x:hidden;}
+
+/* Background blobs */
+body::before{
+  content:'';position:fixed;top:-100px;right:-100px;
+  width:500px;height:500px;
+  background:radial-gradient(circle,rgba(34,197,94,.12) 0%,transparent 70%);
+  border-radius:50%;pointer-events:none;z-index:0;
+}
+body::after{
+  content:'';position:fixed;bottom:-80px;left:-80px;
+  width:400px;height:400px;
+  background:radial-gradient(circle,rgba(249,115,22,.08) 0%,transparent 70%);
+  border-radius:50%;pointer-events:none;z-index:0;
+}
+
+/* Back nav */
+.auth-nav{
+  position:fixed;top:16px;left:16px;z-index:50;
+}
+.auth-nav__back{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:.82rem;font-weight:700;color:var(--ink3);
+  background:white;border:1px solid var(--border2);
+  padding:7px 14px;border-radius:var(--r-pill);
+  box-shadow:var(--clay-sm);transition:var(--transition);
+  text-decoration:none;
+}
+.auth-nav__back:hover{color:var(--gr-700);border-color:var(--gr-400);}
+
+/* Auth card */
+.auth-card{
+  background:white;border-radius:var(--r-2xl);
+  box-shadow:var(--clay-xl);
+  width:100%;max-width:680px;
+  overflow:hidden;border:1px solid var(--border);
+  position:relative;z-index:1;
+  animation:cardIn .5s var(--ease-clay) both;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
+
+/* Logo area */
+.auth-logo{
+  display:flex;justify-content:center;padding:28px 0 0;
+}
+.logo-circle{
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gr-500),var(--gr-700));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;
+  box-shadow:0 3px 0 var(--gr-700),0 6px 16px rgba(22,163,74,.3);
+}
+
+/* Progress strip */
+.auth-strip{height:4px;background:var(--border);margin-top:16px;}
+.auth-strip-fill{height:100%;background:linear-gradient(90deg,var(--gr-500),var(--gr-300));width:0%;transition:width .5s var(--ease-out);}
+
+/* Split layout */
+.landing-split{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:32px;padding:28px 32px 32px;
+}
+@media(max-width:600px){
+  .landing-split{grid-template-columns:1fr;gap:24px;padding:20px 18px 28px;}
+  .auth-card{max-width:420px;}
+}
+
+/* Left — features */
+.landing-title{
+  font-size:2rem;font-weight:900;line-height:1.15;
+  color:var(--ink);margin-bottom:10px;
+}
+.landing-desc{
+  font-size:.875rem;color:var(--ink3);
+  line-height:1.65;margin-bottom:22px;
+}
+.landing-features{display:flex;flex-direction:column;gap:14px;}
+.landing-feature{
+  display:flex;align-items:flex-start;gap:12px;
+  animation:featureIn .4s var(--ease-out) both;
+}
+.landing-feature:nth-child(1){animation-delay:.2s}
+.landing-feature:nth-child(2){animation-delay:.28s}
+.landing-feature:nth-child(3){animation-delay:.36s}
+.landing-feature:nth-child(4){animation-delay:.44s}
+@keyframes featureIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.feature-icon{
+  width:36px;height:36px;border-radius:12px;
+  background:var(--gr-50);border:1px solid var(--gr-200);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;flex-shrink:0;margin-top:1px;color:var(--gr-700);
+}
+.feature-title{font-size:.875rem;font-weight:800;color:var(--ink);margin-bottom:2px;}
+.feature-desc{font-size:.775rem;color:var(--ink3);line-height:1.55;}
+
+/* Right — CTA */
+.landing-right{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;
+  padding:24px 16px;
+  background:var(--gr-50);
+  border-radius:var(--r-xl);
+  border:1px solid var(--gr-100);
+  animation:rightIn .5s var(--ease-out) .1s both;
+}
+@keyframes rightIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+
+.fox-avatar{
+  font-size:4rem;display:block;margin-bottom:16px;
+  animation:float 3s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+.cta-title{font-size:1.3rem;font-weight:900;color:var(--ink);margin-bottom:6px;}
+.cta-desc{font-size:.85rem;color:var(--ink3);margin-bottom:20px;line-height:1.55;}
+
+.btn-primary{
+  display:flex;align-items:center;justify-content:center;
+  width:100%;padding:12px 24px;
+  background:var(--gr-500);color:white;
+  border:none;border-radius:var(--r-pill);
+  font-family:var(--font);font-size:.875rem;font-weight:800;
+  letter-spacing:.03em;cursor:pointer;
+  box-shadow:0 4px 0 var(--gr-700),var(--clay-green);
+  transition:var(--transition);text-decoration:none;
+}
+.btn-primary:hover{background:var(--gr-700);transform:translateY(-1px);}
+.btn-primary:active{transform:translateY(3px);box-shadow:0 1px 0 var(--gr-700);}
+
+.login-link{
+  margin-top:14px;font-size:.82rem;color:var(--ink3);
+}
+.login-link a{
+  color:var(--gr-700);font-weight:700;
+  text-decoration:underline;text-underline-offset:2px;
+}
+</style>
+</head>
+<body>
+
+<!-- Back nav -->
+<nav class="auth-nav">
+  <a href="plantfox_landing.html" class="auth-nav__back">
+    ← Home
+  </a>
+</nav>
+
+<!-- Auth card -->
+<div class="auth-card">
+
+  <!-- Logo -->
+  <div class="auth-logo">
+    <div class="logo-circle">🦊</div>
+  </div>
+
+  <!-- Progress strip (0% — not registered yet) -->
+  <div class="auth-strip">
+    <div class="auth-strip-fill" style="width:0%"></div>
+  </div>
+
+  <!-- Split layout -->
+  <div class="landing-split">
+
+    <!-- Left — Features -->
+    <div class="landing-left">
+      <h1 class="landing-title">Join the<br>Sanctuary</h1>
+      <p class="landing-desc">Connect your digital world with your physical garden using next-gen plant identity.</p>
+
+      <div class="landing-features">
+        <div class="landing-feature">
+          <div class="feature-icon">🛡️</div>
+          <div>
+            <div class="feature-title">Digital Sanctuary</div>
+            <div class="feature-desc">All your plants secured in a private digital vault.</div>
+          </div>
+        </div>
+        <div class="landing-feature">
+          <div class="feature-icon">✨</div>
+          <div>
+            <div class="feature-title">AI Caretaker</div>
+            <div class="feature-desc">Your personal Foxie assistant follows you everywhere.</div>
+          </div>
+        </div>
+        <div class="landing-feature">
+          <div class="feature-icon">🆔</div>
+          <div>
+            <div class="feature-title">GreenID SBTs</div>
+            <div class="feature-desc">Own your planting journey with soulbound identity.</div>
+          </div>
+        </div>
+        <div class="landing-feature">
+          <div class="feature-icon">⚡</div>
+          <div>
+            <div class="feature-title">One-Click Access</div>
+            <div class="feature-desc">No seed phrases, no complex passwords.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right — CTA -->
+    <div class="landing-right">
+      <span class="fox-avatar">🦊</span>
+      <h2 class="cta-title">Ready to grow?</h2>
+      <p class="cta-desc">Get your free embedded wallet and GreenID in 60 seconds.</p>
+      <a href="plantfox_register.html" class="btn-primary">START JOURNEY →</a>
+      <p class="login-link">Already a caretaker? <a href="plantfox_login.html">Log in</a></p>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

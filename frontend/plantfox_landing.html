@@ -1,0 +1,1492 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<script src="config.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PlantFox — Grow Smarter with AI</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16a34a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PlantFox">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+
+/* ═══════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════ */
+:root {
+  /* Fox orange — kept for brand identity ONLY */
+  --fox-50:#fff5ee; --fox-100:#ffe8d5; --fox-200:#ffd0a8;
+  --fox-300:#ffaa66; --fox-400:#f47c32; --fox-500:#ea6d1e;
+  --fox-600:#c45512; --fox-700:#9a3f08; --fox-800:#6e2c05;
+  /* Green — primary action color (from screenshots) */
+  --gr-50:#eef8f2;  --gr-100:#d1f0de; --gr-200:#a3dfc0;
+  --gr-300:#5cc68a; --gr-400:#28a85a; --gr-500:#16a34a;
+  --gr-600:#14813b; --gr-700:#0e5e2b;
+  /* Neutrals */
+  --ink:#1a1a1a; --ink2:#3d3d3d; --ink3:#7a7a7a; --ink4:#b8b8b8;
+  /* Background = soft sage green from screenshots */
+  --bg:#eef8f2; --white:#fff; --surface:#fff; --surface2:#e4f2ea;
+  --border:rgba(22,163,74,.15); --border2:rgba(22,163,74,.25);
+
+  /* Shadows */
+  --clay-fox:  0 3px 0 rgba(154,63,8,.5),  0 8px 24px rgba(234,109,30,.2);
+  --clay-green:0 3px 0 rgba(14,94,43,.45), 0 8px 24px rgba(22,163,74,.2);
+  --clay-white:0 2px 0 rgba(0,0,0,.08),    0 6px 20px rgba(0,0,0,.07);
+  --clay-dark: 0 4px 0 rgba(0,0,0,.4),     0 8px 24px rgba(0,0,0,.22);
+  --clay-sm:   0 2px 0 rgba(0,0,0,.07),    0 4px 12px rgba(0,0,0,.06);
+
+  --r:16px; --r-lg:22px; --r-xl:28px; --r-2xl:40px; --r-pill:999px;
+  --font:'DM Sans',sans-serif;
+  --font-display:'DM Serif Display',serif;
+  --ease-clay:cubic-bezier(.34,1.56,.64,1);
+}
+
+/* ═══════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;font-size:16px;}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);overflow-x:hidden;line-height:1.6;font-weight:400;}
+a{text-decoration:none;color:inherit;}
+button{font-family:var(--font);cursor:pointer;border:none;}
+img{max-width:100%;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--fox-200);border-radius:4px;}
+
+/* ═══════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════ */
+#nav {
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  height:68px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 5%;
+  background:rgba(238,248,242,.95);
+  backdrop-filter:blur(24px);
+  border-bottom:1px solid rgba(22,163,74,.12);
+  transition:box-shadow .3s;
+}
+#nav.scrolled{box-shadow:0 1px 0 rgba(22,163,74,.1),0 4px 20px rgba(0,0,0,.06);}
+.nav-logo{display:flex;align-items:center;gap:4px;}
+/* Logo fox emoji — sized to match wordmark text */
+.nav-logo-fox{
+  flex-shrink:0;
+  font-size:1.3rem; /* slightly bigger than 1.18rem wordmark so it reads well */
+  line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  transition:.25s ease;
+}
+.nav-logo-fox:hover{transform:translateY(-2px) scale(1.15) rotate(-5deg);}
+/* Logo text: Plant (dark) + Fox (orange) */
+.nav-wordmark{font-size:1.18rem;font-weight:800;color:var(--ink);letter-spacing:-.025em;}
+.nav-wordmark span{color:#e56900;}
+.nav-links{display:flex;align-items:center;gap:2rem;}
+.nav-links a{font-size:.9rem;font-weight:500;color:var(--ink3);transition:.2s;}
+.nav-links a:hover{color:var(--ink);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-auth-btns{display:flex;align-items:center;gap:8px;}
+
+
+/* Mobile nav */
+.nav-hamburger{
+  display:none;width:38px;height:38px;
+  background:var(--gr-50);border:1.5px solid var(--border);
+  border-radius:10px;align-items:center;justify-content:center;
+  color:var(--gr-500);flex-shrink:0;
+}
+.mobile-menu{
+  display:none;position:fixed;top:68px;left:0;right:0;
+  background:var(--bg);border-bottom:1px solid rgba(22,163,74,.1);
+  padding:16px 5%;z-index:99;
+  box-shadow:0 8px 32px rgba(0,0,0,.08);
+}
+.mobile-menu.open{display:block;}
+.mobile-menu a{display:block;padding:10px 0;font-size:1rem;font-weight:500;color:var(--ink2);border-bottom:1px solid var(--border);}
+.mobile-menu a:last-child{border:none;}
+.mobile-menu-auth{display:flex;gap:8px;padding:12px 0 0;}
+.mobile-menu-auth a{border:none!important;padding:0!important;flex:1;display:flex;align-items:center;justify-content:center;}
+
+
+/* ═══════════════════════════════════════════
+   SECTIONS SHARED
+═══════════════════════════════════════════ */
+section{padding:88px 5%;}
+.sec-label{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--fox-50);border:1.5px solid var(--border2);
+  border-radius:var(--r-pill);padding:5px 14px;
+  font-size:.72rem;font-weight:600;color:var(--fox-600);
+  text-transform:uppercase;letter-spacing:.06em;
+  margin-bottom:16px;
+}
+.sec-title{
+  font-size:clamp(2rem,4vw,3rem);font-weight:300;
+  font-family:var(--font-display);
+  line-height:1.14;color:var(--ink);margin-bottom:16px;
+}
+.sec-title span{color:var(--fox-500);}
+.sec-sub{font-size:1rem;font-weight:400;color:var(--ink3);max-width:520px;line-height:1.75;}
+
+/* ═══════════════════════════════════════════
+   CLAY CARD BASE
+═══════════════════════════════════════════ */
+.clay{background:var(--white);border-radius:var(--r-xl);border:1.5px solid rgba(0,0,0,.07);box-shadow:var(--clay-white);}
+.clay-fox{background:linear-gradient(135deg,var(--fox-500),var(--fox-600));border-radius:var(--r-xl);box-shadow:var(--clay-fox);}
+.clay-green{background:linear-gradient(135deg,var(--gr-400),var(--gr-600));border-radius:var(--r-xl);box-shadow:var(--clay-green);}
+.clay-dark{background:linear-gradient(160deg,#1c1a18,#251c10);border-radius:var(--r-xl);border:1px solid rgba(181,98,30,.18);box-shadow:var(--clay-dark);}
+.clay-tinted{background:var(--fox-50);border-radius:var(--r-xl);border:1.5px solid var(--border);box-shadow:var(--clay-sm);}
+
+/* ═══════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════ */
+a.btn,a.btn:hover,a.btn:visited{text-decoration:none;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:var(--r);font-size:1rem;font-weight:600;cursor:pointer;transition:.22s ease;border:none;}
+/* Primary action = GREEN (as screenshots show) */
+.btn-fox{background:var(--gr-500);color:white;box-shadow:0 2px 12px rgba(22,163,74,.3);}
+.btn-fox:hover{transform:translateY(-2px);background:var(--gr-600);box-shadow:0 6px 20px rgba(22,163,74,.35);}
+.btn-fox:active{transform:translateY(0);box-shadow:0 1px 6px rgba(22,163,74,.2);}
+.btn-green{background:var(--gr-500);color:white;box-shadow:0 2px 12px rgba(22,163,74,.28);}
+.btn-green:hover{transform:translateY(-2px);background:var(--gr-600);box-shadow:0 6px 18px rgba(22,163,74,.35);}
+/* Ghost stays clean white */
+.btn-ghost{background:var(--white);color:var(--ink2);border:1.5px solid rgba(0,0,0,.12);box-shadow:var(--clay-sm);}
+.btn-ghost:hover{transform:translateY(-1px);border-color:rgba(22,163,74,.3);color:var(--gr-600);box-shadow:0 4px 16px rgba(0,0,0,.1);}
+.btn-outline-white{background:rgba(255,255,255,.12);color:white;border:1.5px solid rgba(255,255,255,.28);border-radius:var(--r);}
+.btn-outline-white:hover{background:rgba(255,255,255,.22);}
+/* White solid button — used on dark CTA section */
+.btn-white{background:#fff;color:var(--gr-700);font-weight:700;box-shadow:0 2px 12px rgba(0,0,0,.12);}
+.btn-white:hover{background:#f0fdf4;transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.15);}
+.btn-white:active{transform:translateY(0);}
+.btn-lg{padding:15px 32px;font-size:1rem;border-radius:16px;}
+.btn-sm{padding:7px 16px;font-size:.82rem;border-radius:10px;}
+
+/* ═══════════════════════════════════════════
+   HERO — 2-column layout
+═══════════════════════════════════════════ */
+#hero{
+  min-height:100vh;padding-top:68px;
+  display:flex;align-items:center;
+  background:linear-gradient(160deg,#eef8f2 0%,#e6f5ec 50%,#eef8f2 100%);
+  position:relative;overflow:hidden;
+}
+
+/* Background blobs */
+.blob{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;opacity:.4;}
+.blob-1{width:600px;height:600px;background:radial-gradient(circle,#ffd5aa,transparent);top:-100px;right:-150px;animation:drift 14s ease-in-out infinite;}
+.blob-2{width:500px;height:500px;background:radial-gradient(circle,#a8dfc0,transparent);bottom:-100px;left:-120px;animation:drift 16s ease-in-out infinite reverse;}
+.blob-3{width:280px;height:280px;background:radial-gradient(circle,#c3e8d0,transparent);top:40%;left:30%;animation:drift 11s ease-in-out infinite 2s;}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.05)}66%{transform:translate(-20px,15px) scale(.97)}}
+
+/* Dot grid */
+#hero::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(circle,rgba(22,163,74,.07) 1px,transparent 1px);
+  background-size:28px 28px;
+  pointer-events:none;
+}
+
+/* Two-column layout */
+.hero-inner{
+  position:relative;z-index:1;
+  width:100%;max-width:1140px;
+  margin:0 auto;padding:0 5%;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:60px;align-items:center;
+  min-height:100vh;
+}
+
+/* ── LEFT COLUMN ── */
+.hero-text{display:flex;flex-direction:column;align-items:flex-start;}
+
+.hero-badge{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--white);border:1.5px solid rgba(22,163,74,.25);
+  border-radius:var(--r-pill);padding:5px 14px;
+  font-size:.72rem;font-weight:700;color:var(--gr-600);letter-spacing:.05em;text-transform:uppercase;
+  box-shadow:0 2px 8px rgba(22,163,74,.1);margin-bottom:24px;
+}
+.badge-dot{width:7px;height:7px;background:var(--gr-400);border-radius:50%;animation:pulse 2s infinite;flex-shrink:0;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.75)}}
+
+.hero-title{
+  font-size:clamp(2.6rem,4.5vw,3.8rem);font-weight:800;
+  font-family:var(--font-display);
+  line-height:1.1;color:var(--ink);
+  margin-bottom:20px;
+  text-align:left;
+}
+.hero-title em{
+  color:var(--gr-600);
+  font-style:italic;
+  font-weight:800;
+}
+
+.hero-sub{
+  font-size:1rem;font-weight:400;color:var(--ink3);
+  max-width:420px;margin-bottom:32px;line-height:1.75;
+  text-align:left;
+}
+
+.hero-ctas{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:40px;}
+
+/* Stat row: 12k+ / 340k / 98% */
+.hero-stats{
+  display:flex;gap:36px;align-items:center;
+}
+.hero-stat-num{
+  font-size:1.6rem;font-weight:900;font-family:var(--font-display);
+  color:var(--ink);line-height:1;
+}
+.hero-stat-lbl{
+  font-size:.72rem;font-weight:500;color:var(--ink3);
+  margin-top:2px;letter-spacing:.01em;
+}
+
+/* ── RIGHT COLUMN ── */
+.hero-right{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  min-height:620px;
+}
+
+/* Phone */
+.hero-phone{
+  width:300px;
+  background:white;border-radius:44px;
+  box-shadow:0 40px 120px rgba(0,0,0,.22),0 12px 32px rgba(0,0,0,.08);
+  overflow:hidden;
+  border:2.5px solid rgba(0,0,0,.08);
+  position:relative;z-index:2;
+}
+.phone-bar{
+  height:44px;background:white;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;
+  border-bottom:none;
+}
+.phone-bar-time{font-size:.78rem;font-weight:700;color:#111;}
+.phone-screen{background:#f2f5f2;padding:20px 18px 4px;}
+
+/* Floating cards */
+.float{
+  position:absolute;background:white;border-radius:14px;
+  border:1.5px solid rgba(0,0,0,.06);box-shadow:0 8px 24px rgba(0,0,0,.1);
+  padding:10px 13px;
+  font-family:var(--font);
+}
+/* Top-right: Today's health */
+.fl-health{
+  top:20px;right:-30px;width:148px;
+  animation:float-a 5s ease-in-out infinite;
+  z-index:3;
+}
+/* Bottom-left: GreenID minted */
+.fl-gid{
+  bottom:110px;left:-40px;width:148px;
+  animation:float-a 5s ease-in-out infinite .7s;
+  z-index:3;
+}
+/* Bottom-right: Streak */
+.fl-streak{
+  bottom:60px;right:-30px;width:110px;
+  animation:float-a 5s ease-in-out infinite 1.4s;
+  z-index:3;
+}
+@keyframes float-a{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.fl-label{font-size:.58rem;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
+.fl-value{font-size:.85rem;font-weight:800;color:var(--ink);}
+.fl-value.green{color:var(--gr-600);}
+.fl-chip{display:inline-block;background:var(--fox-100);border-radius:20px;padding:2px 8px;font-size:.6rem;font-weight:700;color:var(--fox-600);margin-top:3px;}
+.fl-chip.green{background:var(--gr-100);color:var(--gr-600);}
+.fl-chain{font-size:.65rem;font-weight:600;color:var(--gr-500);margin-top:2px;display:block;}
+
+/* Phone card content */
+.pcard{
+  background:linear-gradient(135deg,#18a34a 0%,#0f7a35 100%);
+  border-radius:18px;padding:16px;
+  margin-bottom:14px;color:white;
+  position:relative;overflow:hidden;
+}
+/* decorative circle in top right */
+.pcard::after{
+  content:'';position:absolute;
+  top:-20px;right:-20px;
+  width:90px;height:90px;
+  background:rgba(255,255,255,.1);
+  border-radius:50%;
+}
+.pcard-avatar{
+  width:40px;height:40px;
+  background:var(--fox-500);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;
+  margin-bottom:12px;
+  position:relative;z-index:1;
+  box-shadow:0 3px 10px rgba(0,0,0,.2);
+}
+.pcard-msg{
+  font-size:.78rem;font-weight:600;
+  line-height:1.55;opacity:.97;
+  margin-bottom:10px;
+  position:relative;z-index:1;
+}
+.pcard-streak-badge{
+  background:rgba(255,255,255,.2);
+  border-radius:20px;
+  padding:4px 10px;
+  font-size:.65rem;font-weight:800;
+  display:inline-flex;align-items:center;gap:4px;
+  position:relative;z-index:1;
+  border:1px solid rgba(255,255,255,.25);
+}
+
+/* Plant tiles */
+.plant-grid{display:flex;gap:8px;margin-bottom:0;}
+.plant-tile{
+  flex:1;background:white;border-radius:14px;
+  padding:12px 6px 10px;
+  text-align:center;
+  border:1.5px solid rgba(0,0,0,.05);
+  box-shadow:0 2px 8px rgba(0,0,0,.04);
+}
+.plant-tile-em{font-size:1.8rem;margin-bottom:6px;}
+.plant-tile-name{font-size:.65rem;font-weight:700;color:#111;margin-bottom:3px;}
+.plant-tile-status{
+  font-size:.58rem;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:3px;
+  color:var(--gr-500);
+}
+.plant-tile-status.thirsty{color:#e07020;}
+
+/* Phone bottom nav */
+.phone-nav{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid rgba(0,0,0,.07);
+  background:white;
+  padding:10px 0 14px;
+  margin-top:14px;
+}
+.phone-nav-item{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  font-size:.55rem;font-weight:600;color:#999;
+}
+.phone-nav-item.active{color:var(--gr-600);}
+.phone-nav-icon{font-size:1.1rem;}
+
+/* ═══════════════════════════════════════════
+   STATS BAND
+═══════════════════════════════════════════ */
+#stats{
+  padding:0;
+  background:linear-gradient(135deg,#0d5c30,#16a34a);
+  border-top:none;border-bottom:none;
+}
+.stats-band{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  max-width:1100px;margin:0 auto;
+}
+.stat-cell{
+  text-align:center;padding:28px 20px;
+  border-right:1px solid rgba(255,255,255,.12);
+}
+.stat-cell:last-child{border:none;}
+.stat-num{font-size:2.4rem;font-weight:300;font-family:var(--font-display);color:white;line-height:1;}
+.stat-lbl{font-size:.75rem;font-weight:400;color:rgba(255,255,255,.65);margin-top:6px;letter-spacing:.04em;text-transform:uppercase;}
+
+/* ═══════════════════════════════════════════
+   FEATURES
+═══════════════════════════════════════════ */
+#features{background:var(--white);}
+.features-head{text-align:center;margin-bottom:56px;}
+.features-head .sec-sub{margin:0 auto;}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:1100px;margin:0 auto;}
+.feat-card{
+  background:var(--white);border-radius:var(--r-xl);
+  border:1.5px solid rgba(22,163,74,.1);
+  padding:24px;
+  box-shadow:var(--clay-sm);
+  transition:.3s ease;
+  cursor:default;
+  position:relative;overflow:hidden;
+}
+.feat-card::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(22,163,74,.03),transparent);
+  opacity:0;transition:.3s;
+}
+.feat-card:hover{transform:translateY(-5px);box-shadow:0 12px 40px rgba(22,163,74,.1);border-color:rgba(22,163,74,.2);}
+.feat-card:hover::after{opacity:1;}
+.feat-icon{
+  width:52px;height:52px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;margin-bottom:16px;
+}
+.feat-icon.fox{background:var(--fox-50);}
+.feat-icon.green{background:var(--gr-50);}
+.feat-icon.amber{background:#fdf5e0;}
+.feat-icon.blue{background:#e8f2fd;}
+.feat-title{font-size:.95rem;font-weight:600;margin-bottom:6px;}
+.feat-desc{font-size:.875rem;font-weight:400;color:var(--ink3);line-height:1.7;}
+.feat-tag{display:inline-block;margin-top:12px;font-size:.72rem;font-weight:500;color:var(--gr-600);}
+
+/* ═══════════════════════════════════════════
+   FOXIE SECTION — big dark hero
+═══════════════════════════════════════════ */
+#foxie-section{padding:88px 5%;background:linear-gradient(160deg,#1a1612 0%,#2a1e0e 100%);}
+.foxie-inner{
+  display:grid;grid-template-columns:5fr 4fr;
+  gap:56px;align-items:center;max-width:1100px;margin:0 auto;
+}
+
+/* Chat mockup */
+.foxie-chat-mock{
+  background:rgba(255,255,255,.04);
+  border:1.5px solid rgba(232,101,10,.2);
+  border-radius:var(--r-xl);
+  overflow:hidden;
+  box-shadow:var(--clay-dark);
+}
+.fchm-top{
+  background:rgba(232,101,10,.12);
+  border-bottom:1px solid rgba(232,101,10,.18);
+  padding:14px 18px;
+  display:flex;align-items:center;gap:12px;
+}
+.fchm-av{
+  width:44px;height:44px;background:var(--fox-500);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;
+  box-shadow:0 3px 0 var(--fox-700),0 4px 12px rgba(232,101,10,.4);
+  animation:fox-glow 4s ease-in-out infinite;
+}
+@keyframes fox-glow{0%,100%{box-shadow:0 3px 0 var(--fox-700),0 4px 12px rgba(232,101,10,.4)}50%{box-shadow:0 3px 0 var(--fox-700),0 4px 22px rgba(232,101,10,.7)}}
+.fchm-name{font-size:.95rem;font-weight:900;color:white;}
+.fchm-status{font-size:.7rem;color:rgba(255,255,255,.5);font-weight:600;display:flex;align-items:center;gap:5px;margin-top:2px;}
+.online-dot{width:6px;height:6px;background:#4ade80;border-radius:50%;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.fchm-msgs{padding:16px;display:flex;flex-direction:column;gap:10px;}
+.fmsg{display:flex;gap:8px;align-items:flex-end;}
+.fmsg.u{flex-direction:row-reverse;}
+.fmsg-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;}
+.fmsg-av.f{background:var(--fox-600);}
+.fmsg-av.u{background:var(--gr-500);}
+.fmsg-bub{padding:10px 13px;border-radius:16px;font-size:.82rem;font-weight:600;line-height:1.55;max-width:75%;}
+.fmsg:not(.u) .fmsg-bub{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.88);border-radius:4px 16px 16px 16px;}
+.fmsg.u .fmsg-bub{background:linear-gradient(135deg,var(--fox-500),var(--fox-600));color:white;border-radius:16px 4px 16px 16px;box-shadow:0 3px 0 var(--fox-700);}
+.fchm-chips{display:flex;gap:6px;padding:8px 16px;border-top:1px solid rgba(255,255,255,.06);flex-wrap:wrap;}
+.fchm-chip{background:rgba(232,101,10,.15);border:1px solid rgba(232,101,10,.25);border-radius:20px;padding:4px 11px;font-size:.7rem;font-weight:700;color:var(--fox-300);}
+.fchm-input{padding:10px 14px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.15);}
+.fchm-in{flex:1;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.1);border-radius:12px;padding:8px 13px;font-size:.82rem;font-weight:600;color:white;outline:none;font-family:var(--font);}
+.fchm-in::placeholder{color:rgba(255,255,255,.3);}
+.fchm-send{width:34px;height:34px;background:var(--fox-500);border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 0 var(--fox-700);}
+
+/* Foxie text side */
+.foxie-text .sec-label{background:rgba(232,101,10,.15);border-color:rgba(232,101,10,.3);color:var(--fox-300);}
+.foxie-text .sec-title{color:white;}
+.foxie-text .sec-title span{color:var(--fox-400);}
+.foxie-text .sec-sub{color:rgba(255,255,255,.65);}
+.foxie-feats{display:flex;flex-direction:column;gap:14px;margin-top:28px;}
+.foxie-feat{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:14px;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);border-radius:16px;
+  transition:.25s;
+}
+.foxie-feat:hover{background:rgba(232,101,10,.1);border-color:rgba(232,101,10,.25);}
+.foxie-feat-ic{
+  width:42px;height:42px;min-width:42px;border-radius:12px;
+  background:rgba(232,101,10,.18);
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+}
+.foxie-feat-t{font-size:.9rem;font-weight:800;color:white;margin-bottom:2px;}
+.foxie-feat-d{font-size:.8rem;font-weight:600;color:rgba(255,255,255,.55);line-height:1.5;}
+
+/* ═══════════════════════════════════════════
+   GREENID SECTION
+═══════════════════════════════════════════ */
+#greenid-section{background:var(--bg);}
+.greenid-inner{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;max-width:1100px;margin:0 auto;}
+
+/* GreenID card mock */
+.gid-mock{
+  background:linear-gradient(145deg,#1a1612,#24180e);
+  border-radius:var(--r-xl);padding:24px;color:white;
+  box-shadow:var(--clay-dark);
+  border:1.5px solid rgba(232,101,10,.2);
+  position:relative;overflow:hidden;
+}
+.gid-mock::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(232,101,10,.18),transparent);}
+.gid-mock::after{content:'';position:absolute;bottom:-30px;left:40px;width:100px;height:100px;background:radial-gradient(circle,rgba(62,201,98,.1),transparent);}
+.gid-badge-row{display:flex;align-items:center;gap:8px;margin-bottom:16px;position:relative;z-index:1;}
+.gid-code{font-family:monospace;font-size:.78rem;font-weight:700;color:var(--fox-400);letter-spacing:.08em;}
+.gid-on-badge{display:flex;align-items:center;gap:5px;background:rgba(62,201,98,.15);border:1px solid rgba(62,201,98,.25);border-radius:20px;padding:3px 10px;font-size:.68rem;font-weight:800;color:#4ade80;}
+.gid-plant-row{display:flex;align-items:center;gap:14px;margin-bottom:16px;position:relative;z-index:1;}
+.gid-plant-em{font-size:3rem;filter:drop-shadow(0 4px 12px rgba(232,101,10,.3));}
+.gid-plant-name{font-size:1.1rem;font-weight:900;}
+.gid-plant-sci{font-size:.72rem;opacity:.5;font-style:italic;margin-top:2px;}
+.gid-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;position:relative;z-index:1;}
+.gid-stat{background:rgba(255,255,255,.07);border-radius:12px;padding:10px 12px;}
+.gid-stat-l{font-size:.58rem;font-weight:800;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;}
+.gid-stat-v{font-size:1rem;font-weight:900;}
+.gid-chain-row{display:flex;align-items:center;gap:8px;background:rgba(62,201,98,.1);border:1px solid rgba(62,201,98,.2);border-radius:12px;padding:10px 12px;font-size:.75rem;font-weight:700;position:relative;z-index:1;}
+.chain-hash-s{font-family:monospace;font-size:.65rem;color:var(--gr-400);margin-left:auto;}
+.gid-actions{display:flex;gap:8px;margin-top:12px;position:relative;z-index:1;}
+.gid-action-btn{flex:1;padding:9px;border-radius:12px;font-size:.78rem;font-weight:800;cursor:pointer;transition:.2s;text-align:center;}
+.gid-dl{background:rgba(62,201,98,.15);border:1px solid rgba(62,201,98,.3);color:var(--gr-400);}
+.gid-dl:hover{background:rgba(62,201,98,.25);}
+.gid-mint{background:var(--fox-500);color:white;border:none;box-shadow:0 3px 0 var(--fox-700);}
+.gid-mint:hover{transform:translateY(-2px);box-shadow:0 5px 0 var(--fox-700);}
+
+.greenid-text .sec-label{background:var(--gr-100);border-color:rgba(37,168,71,.3);color:var(--gr-700);}
+.greenid-text .sec-title span{color:var(--gr-500);}
+.gid-checklist{display:flex;flex-direction:column;gap:12px;margin-top:24px;}
+.gid-check{display:flex;align-items:flex-start;gap:12px;}
+.gid-check-ic{
+  width:26px;height:26px;min-width:26px;
+  background:var(--gr-100);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  margin-top:2px;
+  box-shadow:0 3px 0 rgba(37,168,71,.25);
+}
+.gid-check-ic span{width:9px;height:9px;background:var(--gr-500);border-radius:50%;display:block;}
+.gid-check-t{font-size:.9rem;font-weight:700;color:var(--ink2);}
+
+/* ═══════════════════════════════════════════
+   HOW IT WORKS — Duolingo steps
+═══════════════════════════════════════════ */
+#how{background:linear-gradient(160deg,#0a3d1f,#16a34a);padding:88px 5%;}
+.how-inner{max-width:1100px;margin:0 auto;}
+.how-head{text-align:center;margin-bottom:56px;}
+.how-head .sec-label{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.8);}
+.how-head .sec-title{color:white;}
+.how-head .sec-sub{color:rgba(255,255,255,.7);margin:0 auto;}
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.step-card{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:var(--r-xl);padding:24px;
+  text-align:center;
+  transition:.3s ease;
+}
+.step-card:hover{background:rgba(255,255,255,.14);transform:translateY(-4px);}
+.step-num{
+  width:48px;height:48px;
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;font-weight:300;font-family:var(--font-display);color:white;
+  margin:0 auto 14px;
+}
+.step-em{font-size:1.6rem;margin-bottom:8px;display:block;}
+.step-t{font-size:.95rem;font-weight:600;color:white;margin-bottom:6px;}
+.step-d{font-size:.8rem;font-weight:400;color:rgba(255,255,255,.65);line-height:1.65;}
+
+/* Connector dots */
+.steps-connector{display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:20px;}
+.conn-dot{width:8px;height:8px;background:rgba(255,255,255,.3);border-radius:50%;}
+.conn-dot.active{background:white;width:20px;border-radius:4px;}
+
+/* ═══════════════════════════════════════════
+   REWARDS SECTION
+═══════════════════════════════════════════ */
+#rewards-section{background:var(--white);}
+.rewards-inner{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;max-width:1100px;margin:0 auto;}
+.xp-mock{
+  background:linear-gradient(135deg,var(--fox-500),var(--fox-700));
+  border-radius:var(--r-xl);padding:24px;color:white;
+  box-shadow:var(--clay-fox);
+  position:relative;overflow:hidden;
+}
+.xp-mock::before{content:'';position:absolute;top:-30px;right:-30px;width:130px;height:130px;background:rgba(255,255,255,.1);border-radius:50%;}
+.xp-num{font-size:3.2rem;font-weight:900;line-height:1;position:relative;z-index:1;}
+.xp-rank{font-size:.85rem;font-weight:700;opacity:.85;margin-bottom:12px;position:relative;z-index:1;}
+.xp-bar-row{display:flex;justify-content:space-between;font-size:.7rem;font-weight:700;opacity:.7;margin-bottom:5px;position:relative;z-index:1;}
+.xp-bar-wrap{height:12px;background:rgba(255,255,255,.2);border-radius:20px;overflow:hidden;margin-bottom:16px;position:relative;z-index:1;}
+.xp-bar-fill{height:100%;width:42%;background:white;border-radius:20px;}
+.tiers-row{display:flex;gap:8px;position:relative;z-index:1;}
+.tier-pill{
+  flex:1;padding:8px;border-radius:12px;text-align:center;
+  background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);
+  font-size:.7rem;font-weight:800;color:rgba(255,255,255,.8);
+  transition:.2s;cursor:default;
+}
+.tier-pill.active-p{background:rgba(255,255,255,.25);border-color:rgba(255,255,255,.5);color:white;}
+.tier-em-sm{display:block;font-size:1.1rem;margin-bottom:2px;}
+
+.earn-list{display:flex;flex-direction:column;gap:10px;margin-top:24px;}
+.earn-r{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;background:var(--fox-50);
+  border:2px solid var(--border);border-radius:16px;
+  transition:.25s var(--ease-clay);
+  box-shadow:0 3px 0 rgba(232,101,10,.1);
+}
+.earn-r:hover{transform:translateX(6px);border-color:var(--fox-400);}
+.earn-ic{font-size:1.2rem;}
+.earn-lbl{font-size:.875rem;font-weight:800;flex:1;}
+.earn-pts{font-size:.875rem;font-weight:900;color:var(--fox-500);}
+
+/* ═══════════════════════════════════════════
+   CROP ADVISOR SECTION
+═══════════════════════════════════════════ */
+#advisor-section{background:var(--bg);}
+.adv-inner{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;max-width:1100px;margin:0 auto;}
+.adv-card{
+  background:linear-gradient(145deg,#0f0e0c,#1e1410);
+  border-radius:var(--r-xl);padding:22px;color:white;
+  box-shadow:var(--clay-dark);border:1.5px solid rgba(232,101,10,.2);
+  position:relative;overflow:hidden;
+}
+.adv-card::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;background:radial-gradient(circle,rgba(232,101,10,.18),transparent);pointer-events:none;}
+.adv-loc{display:flex;align-items:center;gap:6px;font-size:.75rem;font-weight:700;color:rgba(255,255,255,.45);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.07);}
+.adv-wx{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.adv-wx-box{background:rgba(255,255,255,.06);border-radius:12px;padding:10px;text-align:center;}
+.adv-wx-v{font-size:1.2rem;font-weight:900;}
+.adv-wx-l{font-size:.6rem;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:2px;}
+.adv-crop-lbl{font-size:.62rem;font-weight:800;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;}
+.adv-crop-r{display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;margin-bottom:6px;transition:.2s;}
+.adv-crop-r:hover{background:rgba(255,255,255,.07);}
+.adv-crop-name{font-size:.82rem;font-weight:800;flex:1;}
+.adv-crop-why{font-size:.65rem;color:rgba(255,255,255,.45);}
+.adv-crop-score{font-size:.75rem;font-weight:900;color:var(--fox-400);}
+.adv-text .sec-label{background:var(--gr-100);border-color:rgba(37,168,71,.3);color:var(--gr-700);}
+.adv-text .sec-title span{color:var(--gr-500);}
+.adv-feats{display:flex;flex-direction:column;gap:10px;margin-top:24px;}
+.adv-feat{display:flex;align-items:flex-start;gap:10px;}
+.adv-feat-dot{width:8px;height:8px;min-width:8px;background:var(--fox-500);border-radius:50%;margin-top:7px;box-shadow:0 2px 0 var(--fox-700);}
+.adv-feat-t{font-size:.9rem;font-weight:700;color:var(--ink2);}
+
+/* ═══════════════════════════════════════════
+   TESTIMONIALS
+═══════════════════════════════════════════ */
+#testimonials{background:var(--fox-50);}
+.testi-head{text-align:center;margin-bottom:48px;}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1100px;margin:0 auto;}
+.testi-card{
+  background:var(--white);border-radius:var(--r-xl);
+  border:2.5px solid rgba(0,0,0,.06);padding:22px;
+  box-shadow:var(--clay-sm);
+  transition:.3s var(--ease-clay);
+}
+.testi-card:hover{transform:translateY(-5px);box-shadow:0 9px 0 #d4c0b0,0 14px 36px rgba(0,0,0,.1);}
+.stars{display:flex;gap:3px;margin-bottom:10px;}
+.star{font-size:.9rem;}
+.testi-quote{font-size:.9rem;font-weight:600;color:var(--ink2);line-height:1.7;margin-bottom:16px;font-style:italic;}
+.testi-author{display:flex;align-items:center;gap:10px;}
+.testi-av{
+  width:38px;height:38px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.82rem;font-weight:900;color:white;
+  box-shadow:0 3px 0 rgba(0,0,0,.15);
+}
+.testi-name{font-size:.875rem;font-weight:800;}
+.testi-handle{font-size:.72rem;color:var(--ink3);}
+
+/* ═══════════════════════════════════════════
+   CTA SECTION
+═══════════════════════════════════════════ */
+#cta{
+  background:linear-gradient(160deg,#0a3d1f,#16a34a);
+  padding:100px 5%;text-align:center;
+  position:relative;overflow:hidden;
+}
+#cta::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(circle,rgba(255,255,255,.05) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+#cta::after{content:'';position:absolute;top:-80px;right:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(255,200,100,.12),transparent);border-radius:50%;}
+.cta-inner{position:relative;z-index:1;max-width:640px;margin:0 auto;}
+.cta-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:var(--r-pill);padding:6px 16px;font-size:.75rem;font-weight:500;color:rgba(255,255,255,.85);margin-bottom:20px;}
+.cta-title{font-size:clamp(2.2rem,5vw,3.8rem);font-weight:300;font-family:var(--font-display);color:white;margin-bottom:16px;line-height:1.12;}
+.cta-sub{font-size:1rem;font-weight:400;color:rgba(255,255,255,.7);margin-bottom:36px;line-height:1.75;}
+.cta-btns{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;}
+.cta-mascot{font-size:3.5rem;display:block;margin-bottom:16px;animation:mascot-bob 4s ease-in-out infinite;}
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+footer{
+  background:#1e1b18;color:rgba(255,255,255,.65);
+  padding:56px 5% 28px;
+}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:40px;}
+.footer-brand{font-size:1.1rem;font-weight:900;color:white;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
+.footer-brand-fox{width:36px;height:38px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 2px 8px rgba(220,100,0,.4));}
+.footer-tagline{font-size:.82rem;line-height:1.65;max-width:220px;font-weight:600;}
+.footer-col h4{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:12px;}
+.footer-col ul{list-style:none;}
+.footer-col ul li{margin-bottom:8px;}
+.footer-col ul li a{font-size:.85rem;font-weight:600;color:rgba(255,255,255,.55);transition:.2s;}
+.footer-col ul li a:hover{color:var(--fox-400);}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:20px;display:flex;justify-content:space-between;align-items:center;font-size:.8rem;font-weight:600;}
+.footer-socials{display:flex;gap:8px;}
+.social-btn{
+  width:34px;height:34px;
+  background:rgba(255,255,255,.07);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.82rem;cursor:pointer;transition:.2s;
+  border:1px solid rgba(255,255,255,.1);
+}
+.social-btn:hover{background:rgba(232,101,10,.25);border-color:rgba(232,101,10,.4);}
+
+/* Auth modal removed */
+
+/* ═══════════════════════════════════════════
+   SCROLL REVEAL
+═══════════════════════════════════════════ */
+.reveal{opacity:0;transform:translateY(28px);transition:.65s cubic-bezier(.25,.46,.45,.94);}
+.reveal.visible{opacity:1;transform:none;}
+.reveal-delay-1{transition-delay:.1s;}
+.reveal-delay-2{transition-delay:.2s;}
+.reveal-delay-3{transition-delay:.32s;}
+.reveal-delay-4{transition-delay:.45s;}
+
+/* ═══════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════ */
+.toast-wrap{position:fixed;top:16px;right:16px;z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+.toast-el{background:var(--ink);color:white;padding:11px 16px;border-radius:14px;font-size:.82rem;font-weight:700;display:flex;align-items:center;gap:8px;box-shadow:0 6px 0 rgba(0,0,0,.2),0 10px 24px rgba(0,0,0,.2);animation:toastIn .35s var(--ease-clay);pointer-events:all;}
+.toast-el.s{background:linear-gradient(135deg,var(--gr-500),var(--gr-700));}
+.toast-el.e{background:linear-gradient(135deg,#e05a2b,#b03a1b);}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px) scale(.9)}to{opacity:1;transform:none}}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media(max-width:1024px){
+  .hero-inner{grid-template-columns:1fr;gap:40px;}
+  .hero-text{align-items:center;text-align:center;}
+  .hero-sub{text-align:center;}
+  .hero-title{text-align:center;}
+  .hero-right{min-height:420px;}
+  .feat-grid{grid-template-columns:repeat(2,1fr);}
+  .steps-grid{grid-template-columns:repeat(2,1fr);}
+  .foxie-inner,.greenid-inner,.rewards-inner,.adv-inner{grid-template-columns:1fr;gap:32px;}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .stats-band{grid-template-columns:repeat(2,1fr);}
+  .stat-cell{border-bottom:2px solid rgba(255,255,255,.15);}
+  .testi-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:768px){
+  section{padding:64px 5%;}
+  .nav-links{display:none;}
+  .nav-auth-btns{display:none;}
+  .nav-hamburger{display:flex;}
+  .hero-title{font-size:2.2rem;}
+  .fl-1,.fl-2,.fl-3,.fl-4,.fl-health,.fl-gid,.fl-streak{display:none;}
+  .feat-grid{grid-template-columns:1fr;}
+  .steps-grid{grid-template-columns:1fr 1fr;}
+  .footer-grid{grid-template-columns:1fr;}
+  .footer-bottom{flex-direction:column;gap:12px;text-align:center;}
+  .testi-grid{grid-template-columns:1fr;}
+  .stats-band{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:480px){
+  .steps-grid{grid-template-columns:1fr;}
+  .stats-band{grid-template-columns:1fr;}
+  .stat-cell{border-right:none;}
+  .cta-btns{flex-direction:column;align-items:center;}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════ NAV ════════ -->
+<nav id="nav">
+  <div class="nav-logo">
+    <div class="nav-logo-fox">🦊</div>
+    <span class="nav-wordmark">Plant<span>Fox</span></span>
+  </div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#foxie-section">Foxie AI</a>
+    <a href="#greenid-section">GreenID</a>
+    <a href="#rewards-section">Rewards</a>
+    <a href="#advisor-section">Advisor</a>
+  </div>
+
+  <!-- Right cluster: auth buttons + notif bell + hamburger -->
+  <div class="nav-right">
+    <div class="nav-auth-btns">
+      <a href="plantfox_login.html" class="btn btn-ghost btn-sm">Log In</a>
+      <a href="plantfox_auth_landing.html" class="btn btn-fox btn-sm">Sign Up</a>
+    </div>
+    <button class="nav-hamburger" onclick="toggleMobileMenu()">
+      <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M2 4h13M2 8.5h13M2 13h13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</nav>
+
+
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#features" onclick="closeMobileMenu()">Features</a>
+  <a href="#foxie-section" onclick="closeMobileMenu()">Foxie AI</a>
+  <a href="#greenid-section" onclick="closeMobileMenu()">GreenID</a>
+  <a href="#rewards-section" onclick="closeMobileMenu()">Rewards</a>
+  <a href="#advisor-section" onclick="closeMobileMenu()">Crop Advisor</a>
+  <div class="mobile-menu-auth">
+    <a href="plantfox_login.html" class="btn btn-ghost btn-sm" onclick="closeMobileMenu()">Log In</a>
+    <a href="plantfox_auth_landing.html" class="btn btn-fox btn-sm" onclick="closeMobileMenu()">Sign Up</a>
+  </div>
+</div>
+
+<!-- ════════ HERO ════════ -->
+<section id="hero">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <div class="hero-inner">
+
+    <!-- LEFT: Text -->
+    <div class="hero-text">
+      <div class="hero-badge reveal">
+        <span class="badge-dot"></span>
+        AI-Powered Plant Care
+      </div>
+
+      <h1 class="hero-title reveal reveal-delay-1">
+        Grow with <em>purpose,</em><br>
+        powered by AI
+      </h1>
+
+      <p class="hero-sub reveal reveal-delay-2">
+        PlantFox blends plant care, blockchain identity, and an AI companion into one beautiful experience. Every plant has a story &mdash; let&rsquo;s write yours.
+      </p>
+
+      <div class="hero-ctas reveal reveal-delay-3">
+        <a href="plantfox_auth_landing.html" class="btn btn-fox btn-lg">⭐ Get Started Free</a>
+        <a href="plantfox_login.html" class="btn btn-ghost btn-lg">🌱 Sign In</a>
+      </div>
+
+      <!-- Stats row -->
+      <div class="hero-stats reveal reveal-delay-4">
+        <div>
+          <div class="hero-stat-num">12k+</div>
+          <div class="hero-stat-lbl">Active Growers</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">340k</div>
+          <div class="hero-stat-lbl">Plants Tracked</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">98%</div>
+          <div class="hero-stat-lbl">Health Score</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Phone + floating cards -->
+    <div class="hero-right reveal reveal-delay-2">
+
+      <!-- Float: Today's health (top right) -->
+      <div class="float fl-health">
+        <div class="fl-label">Today&rsquo;s health</div>
+        <div class="fl-value green">🌱 Thriving</div>
+        <span class="fl-chip green">+12 pts earned</span>
+      </div>
+
+      <!-- Float: GreenID minted (bottom left) -->
+      <div class="float fl-gid">
+        <div class="fl-label">GreenID minted</div>
+        <div class="fl-value" style="font-family:monospace;font-size:.82rem">GID-7X2K9A</div>
+        <span class="fl-chain">On-chain ✓</span>
+      </div>
+
+      <!-- Float: Streak (bottom right) -->
+      <div class="float fl-streak">
+        <div class="fl-label">Streak</div>
+        <div class="fl-value">🔥 14 days</div>
+      </div>
+
+      <!-- Phone mockup -->
+      <div class="hero-phone">
+        <div class="phone-bar">
+          <span class="phone-bar-time">9:41</span>
+          <span style="color:#888;font-size:.7rem;letter-spacing:3px">&bull;&bull;&bull;</span>
+        </div>
+        <div class="phone-screen">
+          <div style="font-size:.92rem;font-weight:800;color:#111;margin-bottom:3px">Good morning, Arjun 🍃</div>
+          <div style="font-size:.7rem;color:#888;font-weight:400;margin-bottom:16px">3 plants need attention today</div>
+
+          <!-- Foxie dark-green card -->
+          <div class="pcard">
+            <div class="pcard-avatar">🦊</div>
+            <div class="pcard-msg">&ldquo;Your Monstera is thriving! The new leaf unfurled overnight &mdash; give it a little fertilizer to keep the momentum going 🍃&rdquo;</div>
+            <span class="pcard-streak-badge">🔥 14-day streak &middot; <strong>Trusted</strong></span>
+          </div>
+
+          <!-- Plant tiles -->
+          <div class="plant-grid">
+            <div class="plant-tile">
+              <div class="plant-tile-em">🌿</div>
+              <div class="plant-tile-name">Monstera</div>
+              <div class="plant-tile-status">
+                <span style="width:6px;height:6px;background:#22c55e;border-radius:50%;display:inline-block"></span> Happy
+              </div>
+            </div>
+            <div class="plant-tile">
+              <div class="plant-tile-em">🌵</div>
+              <div class="plant-tile-name">Cactus</div>
+              <div class="plant-tile-status">
+                <span style="width:6px;height:6px;background:#22c55e;border-radius:50%;display:inline-block"></span> Happy
+              </div>
+            </div>
+            <div class="plant-tile">
+              <div class="plant-tile-em">🌸</div>
+              <div class="plant-tile-name">Orchid</div>
+              <div class="plant-tile-status thirsty">
+                <span style="width:6px;height:6px;background:#e07020;border-radius:50%;display:inline-block"></span> Thirsty
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom nav -->
+          <div class="phone-nav">
+            <div class="phone-nav-item active">
+              <span class="phone-nav-icon">🌿</span>Garden
+            </div>
+            <div class="phone-nav-item">
+              <span class="phone-nav-icon">🆔</span>GreenID
+            </div>
+            <div class="phone-nav-item">
+              <span class="phone-nav-icon">🦊</span>Foxie
+            </div>
+            <div class="phone-nav-item">
+              <span class="phone-nav-icon">⭐</span>Rewards
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /hero-right -->
+  </div><!-- /hero-inner -->
+</section>
+
+<!-- Stats band removed — stats are in the hero section -->
+
+
+<!-- ════════ FEATURES ════════ -->
+<section id="features">
+  <div class="features-head">
+    <div class="sec-label reveal">✦ Everything you need</div>
+    <h2 class="sec-title reveal reveal-delay-1">The complete plant<br><span>care ecosystem</span></h2>
+    <p class="sec-sub reveal reveal-delay-2">From AI-powered care advice to blockchain-verified plant identities — PlantFox gives your green family the digital life it deserves.</p>
+  </div>
+  <div class="feat-grid">
+    <div class="feat-card reveal">
+      <div class="feat-icon fox">🌿</div>
+      <div class="feat-title">My Garden</div>
+      <div class="feat-desc">Track every plant with care logs, health metrics, and personalised schedules. Water, fertilize, prune — all logged and rewarded.</div>
+      <div class="feat-tag">Care tracking →</div>
+    </div>
+    <div class="feat-card reveal reveal-delay-1">
+      <div class="feat-icon green">🆔</div>
+      <div class="feat-title">GreenID</div>
+      <div class="feat-desc">Every plant gets a blockchain-verified digital identity. Export as PDF, mint as an NFT, or share your plant's passport with the world.</div>
+      <div class="feat-tag">Blockchain identity →</div>
+    </div>
+    <div class="feat-card reveal reveal-delay-2">
+      <div class="feat-icon fox">🤖</div>
+      <div class="feat-title">Digital Twin</div>
+      <div class="feat-desc">Your plant has a living AI persona — mood, energy, hydration — all tracked in real time. Chat with it, and watch it respond to your care.</div>
+      <div class="feat-tag">AI personas →</div>
+    </div>
+    <div class="feat-card reveal reveal-delay-1">
+      <div class="feat-icon fox">🦊</div>
+      <div class="feat-title">Foxie AI</div>
+      <div class="feat-desc">Your personal plant companion. Foxie learns your habits, celebrates streaks, and delivers context-aware plant wisdom when you need it most.</div>
+      <div class="feat-tag">Meet Foxie →</div>
+    </div>
+    <div class="feat-card reveal reveal-delay-2">
+      <div class="feat-icon green">🌾</div>
+      <div class="feat-title">Crop Advisor</div>
+      <div class="feat-desc">Real-time AI farming advice based on your location, weather, and season. Know exactly what to plant, when to plant it, and how to do it.</div>
+      <div class="feat-tag">Smart farming →</div>
+    </div>
+    <div class="feat-card reveal reveal-delay-3">
+      <div class="feat-icon amber">⭐</div>
+      <div class="feat-title">Rewards System</div>
+      <div class="feat-desc">Earn points for every care action. Climb from Sprout to Guardian. Unlock badges, special features, and real-world perks as you grow.</div>
+      <div class="feat-tag">Earn & grow →</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ FOXIE SECTION ════════ -->
+<section id="foxie-section">
+  <div class="foxie-inner">
+    <!-- Chat mock -->
+    <div class="foxie-chat-mock reveal">
+      <div class="fchm-top">
+        <div class="fchm-av">🦊</div>
+        <div>
+          <div class="fchm-name">Foxie AI</div>
+          <div class="fchm-status"><div class="online-dot"></div>Active · Your plant companion</div>
+        </div>
+        <div style="margin-left:auto;background:rgba(232,101,10,.2);border:1px solid rgba(232,101,10,.3);border-radius:20px;padding:4px 12px;font-size:.7rem;font-weight:800;color:var(--fox-300)">🔥 14-day streak</div>
+      </div>
+      <div class="fchm-msgs">
+        <div class="fmsg">
+          <div class="fmsg-av f">🦊</div>
+          <div><div class="fmsg-bub">Good morning! Your <b>Orchid</b> is thirsty today — she's been patient but definitely needs water now 💧</div></div>
+        </div>
+        <div class="fmsg u">
+          <div class="fmsg-av u">🧑</div>
+          <div><div class="fmsg-bub">Thanks! What about my Monstera?</div></div>
+        </div>
+        <div class="fmsg">
+          <div class="fmsg-av f">🦊</div>
+          <div><div class="fmsg-bub">Your Monstera is absolutely thriving 🌿 A new leaf unfurled overnight. Consider a light fertilizer dose next week!</div></div>
+        </div>
+        <div class="fmsg u">
+          <div class="fmsg-av u">🧑</div>
+          <div><div class="fmsg-bub">Amazing! Remind me in 2 days?</div></div>
+        </div>
+        <div class="fmsg">
+          <div class="fmsg-av f">🦊</div>
+          <div><div class="fmsg-bub">Done! I've set a reminder. You just earned <b>+2 pts</b> for chatting 🌱</div></div>
+        </div>
+      </div>
+      <div class="fchm-chips">
+        <div class="fchm-chip">How are my plants?</div>
+        <div class="fchm-chip">Today's care tips</div>
+        <div class="fchm-chip">What to plant?</div>
+      </div>
+      <div class="fchm-input">
+        <input class="fchm-in" placeholder="Ask Foxie about your garden…" readonly onclick="openAuth('register')">
+        <div class="fchm-send">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M11 2L6 7M11 2L7 11L6 7M11 2L1.5 6L6 7" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Text side -->
+    <div class="foxie-text reveal reveal-delay-2">
+      <div class="sec-label">🦊 Your AI Companion</div>
+      <h2 class="sec-title">Meet <span>Foxie</span>,<br>your plant's best friend</h2>
+      <p class="sec-sub">Foxie isn't just a chatbot. It's a living companion that evolves with your gardening habits, celebrates your wins, and genuinely cares about your plants.</p>
+      <div class="foxie-feats">
+        <div class="foxie-feat">
+          <div class="foxie-feat-ic">🧠</div>
+          <div>
+            <div class="foxie-feat-t">Personality that evolves</div>
+            <div class="foxie-feat-d">Foxie's mood shifts based on your streak — from curious newcomer to trusted companion over time.</div>
+          </div>
+        </div>
+        <div class="foxie-feat">
+          <div class="foxie-feat-ic">🌱</div>
+          <div>
+            <div class="foxie-feat-t">Plant voice messages</div>
+            <div class="foxie-feat-d">Each plant speaks through Foxie — hear your Monstera's thoughts in its own unique voice and personality.</div>
+          </div>
+        </div>
+        <div class="foxie-feat">
+          <div class="foxie-feat-ic">🔥</div>
+          <div>
+            <div class="foxie-feat-t">Streak & milestone rewards</div>
+            <div class="foxie-feat-d">Check in daily to maintain your streak. Hit 7, 14, or 30 days to unlock bonus points and exclusive Foxie states.</div>
+          </div>
+        </div>
+        <div class="foxie-feat">
+          <div class="foxie-feat-ic">🎙️</div>
+          <div>
+            <div class="foxie-feat-t">Voice command support</div>
+            <div class="foxie-feat-d">Speak to Foxie hands-free. Ask questions, log care actions, and get instant voice-powered responses.</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:28px">
+        <a href="plantfox_auth_landing.html" class="btn btn-fox">Try Foxie Free →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ GREENID ════════ -->
+<section id="greenid-section">
+  <div class="greenid-inner">
+    <div class="greenid-text reveal">
+      <div class="sec-label">⛓ Blockchain Verified</div>
+      <h2 class="sec-title">Give your plant a<br><span>digital identity</span><br>that lives forever</h2>
+      <p class="sec-sub">GreenID creates an immutable, on-chain record of every plant — its lineage, care history, and health data. Share it, export it, or mint it as an NFT.</p>
+      <div class="gid-checklist">
+        <div class="gid-check">
+          <div class="gid-check-ic"><span></span></div>
+          <div class="gid-check-t">Unique GreenID code auto-assigned at planting</div>
+        </div>
+        <div class="gid-check">
+          <div class="gid-check-ic"><span></span></div>
+          <div class="gid-check-t">Full care history logged and cryptographically verifiable</div>
+        </div>
+        <div class="gid-check">
+          <div class="gid-check-ic"><span></span></div>
+          <div class="gid-check-t">Export as JSON or PDF certificate, or mint on-chain</div>
+        </div>
+        <div class="gid-check">
+          <div class="gid-check-ic"><span></span></div>
+          <div class="gid-check-t">Supported on Polygon Mumbai, Ethereum Sepolia, Base</div>
+        </div>
+        <div class="gid-check">
+          <div class="gid-check-ic"><span></span></div>
+          <div class="gid-check-t">Soulbound Token (SBT) identity minted on registration</div>
+        </div>
+      </div>
+      <div style="margin-top:28px">
+        <a href="plantfox_auth_landing.html" class="btn btn-green">Get Your GreenID →</a>
+      </div>
+    </div>
+
+    <div class="gid-mock reveal reveal-delay-2">
+      <div class="gid-badge-row">
+        <span class="gid-code">GID-7X2K9A-MNST</span>
+        <span class="gid-on-badge">
+          <div style="width:6px;height:6px;background:#4ade80;border-radius:50%;animation:blink 2s infinite"></div>
+          On-chain
+        </span>
+      </div>
+      <div class="gid-plant-row">
+        <div class="gid-plant-em">🌿</div>
+        <div>
+          <div class="gid-plant-name">Monstera Deliciosa</div>
+          <div class="gid-plant-sci">Monstera deliciosa · tropical</div>
+        </div>
+      </div>
+      <div class="gid-stats">
+        <div class="gid-stat"><div class="gid-stat-l">Days alive</div><div class="gid-stat-v">127</div></div>
+        <div class="gid-stat"><div class="gid-stat-l">Care actions</div><div class="gid-stat-v">48</div></div>
+        <div class="gid-stat"><div class="gid-stat-l">Happiness</div><div class="gid-stat-v">94%</div></div>
+        <div class="gid-stat"><div class="gid-stat-l">Growth stage</div><div class="gid-stat-v">Mature</div></div>
+      </div>
+      <div class="gid-chain-row">
+        <div style="width:7px;height:7px;background:#4ade80;border-radius:50%;animation:blink 2s infinite;flex-shrink:0"></div>
+        <span>Minted · Polygon Mumbai</span>
+        <span class="chain-hash-s">0x7f3c...9a1e</span>
+      </div>
+      <div class="gid-actions">
+        <button class="gid-action-btn gid-dl">↓ JSON</button>
+        <button class="gid-action-btn gid-dl">↓ PDF</button>
+        <button class="gid-action-btn gid-mint" onclick="toast('⛓ Mint already done!','s')">⛓ Minted</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ HOW IT WORKS ════════ -->
+<section id="how">
+  <div class="how-inner">
+    <div class="how-head">
+      <div class="sec-label reveal">✦ Get started in minutes</div>
+      <h2 class="sec-title reveal reveal-delay-1">How PlantFox works</h2>
+      <p class="sec-sub reveal reveal-delay-2">Four simple steps to transform how you care for your plants — forever.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card reveal">
+        <div class="step-num">1</div>
+        <span class="step-em">🌱</span>
+        <div class="step-t">Create Account</div>
+        <div class="step-d">Sign up free. Your embedded crypto wallet and Foxie companion are automatically created for you.</div>
+      </div>
+      <div class="step-card reveal reveal-delay-1">
+        <div class="step-num">2</div>
+        <span class="step-em">🪴</span>
+        <div class="step-t">Add Your Plants</div>
+        <div class="step-d">Search our catalog of 1000+ plants. Each plant gets its own GreenID and Digital Twin personality.</div>
+      </div>
+      <div class="step-card reveal reveal-delay-2">
+        <div class="step-num">3</div>
+        <span class="step-em">🦊</span>
+        <div class="step-t">Chat with Foxie</div>
+        <div class="step-d">Ask anything about your garden. Log care actions, get advice, and earn points for every interaction.</div>
+      </div>
+      <div class="step-card reveal reveal-delay-3">
+        <div class="step-num">4</div>
+        <span class="step-em">⛓</span>
+        <div class="step-t">Mint & Grow</div>
+        <div class="step-d">Mint your GreenID on-chain, climb the ranks from Sprout to Guardian, and watch your garden thrive.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ REWARDS ════════ -->
+<section id="rewards-section">
+  <div class="rewards-inner">
+    <div class="reveal">
+      <div class="sec-label">⭐ Earn as you grow</div>
+      <h2 class="sec-title">Every leaf is worth<br><span>something here</span></h2>
+      <p class="sec-sub">Log care actions, maintain streaks, and unlock ranks — from humble Sprout to legendary Garden Guardian.</p>
+      <div class="earn-list">
+        <div class="earn-r"><span class="earn-ic">💧</span><span class="earn-lbl">Water a plant</span><span class="earn-pts">+5 pts</span></div>
+        <div class="earn-r"><span class="earn-ic">✂️</span><span class="earn-lbl">Prune & groom</span><span class="earn-pts">+8 pts</span></div>
+        <div class="earn-r"><span class="earn-ic">🌱</span><span class="earn-lbl">Add new plant</span><span class="earn-pts">+25 pts</span></div>
+        <div class="earn-r"><span class="earn-ic">🆔</span><span class="earn-lbl">Export GreenID</span><span class="earn-pts">+20 pts</span></div>
+        <div class="earn-r"><span class="earn-ic">⛓️</span><span class="earn-lbl">Mint on-chain</span><span class="earn-pts">+50 pts</span></div>
+        <div class="earn-r"><span class="earn-ic">🔥</span><span class="earn-lbl">7-day streak bonus</span><span class="earn-pts">+100 pts</span></div>
+      </div>
+    </div>
+    <div class="reveal reveal-delay-2">
+      <div class="xp-mock">
+        <div style="position:relative;z-index:1">
+          <div class="xp-num">840</div>
+          <div class="xp-rank">Grower · 1,160 pts to Cultivator</div>
+          <div class="xp-bar-row"><span>Rank Progress</span><span>42%</span></div>
+          <div class="xp-bar-wrap"><div class="xp-bar-fill"></div></div>
+          <div class="tiers-row">
+            <div class="tier-pill"><span class="tier-em-sm">🌱</span>Sprout</div>
+            <div class="tier-pill active-p"><span class="tier-em-sm">🌿</span>Grower</div>
+            <div class="tier-pill"><span class="tier-em-sm">🌳</span>Cultivator</div>
+            <div class="tier-pill"><span class="tier-em-sm">🏆</span>Guardian</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ CROP ADVISOR ════════ -->
+<section id="advisor-section">
+  <div class="adv-inner">
+    <div class="adv-text reveal">
+      <div class="sec-label">🌾 Powered by AI + Weather</div>
+      <h2 class="sec-title">Know exactly what to<br><span>grow, right now</span></h2>
+      <p class="sec-sub">The Crop Advisor reads your local weather, climate zone, and season to tell you precisely what to plant — and the best technique for your space.</p>
+      <div class="adv-feats">
+        <div class="adv-feat"><div class="adv-feat-dot"></div><div class="adv-feat-t">Auto-detects your location — no setup needed</div></div>
+        <div class="adv-feat"><div class="adv-feat-dot"></div><div class="adv-feat-t">Seasonal crop suggestions with match score %</div></div>
+        <div class="adv-feat"><div class="adv-feat-dot"></div><div class="adv-feat-t">Farming technique guide: hydroponics, container, vertical</div></div>
+        <div class="adv-feat"><div class="adv-feat-dot"></div><div class="adv-feat-t">AI Q&A with full local weather context</div></div>
+        <div class="adv-feat"><div class="adv-feat-dot"></div><div class="adv-feat-t">Daily & weekly cultivation plans generated automatically</div></div>
+      </div>
+      <div style="margin-top:28px">
+        <a href="plantfox_auth_landing.html" class="btn btn-fox">Try Crop Advisor →</a>
+      </div>
+    </div>
+    <div class="adv-card reveal reveal-delay-2">
+      <div class="adv-loc">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><circle cx="5.5" cy="4.5" r="2" stroke="currentColor" stroke-width="1.1"/><path d="M5.5 1C3.3 1 1.5 2.8 1.5 5c0 2.5 4 7 4 7s4-4.5 4-7c0-2.2-1.8-4-4-4z" stroke="currentColor" stroke-width="1.1"/></svg>
+        Thiruvananthapuram, Kerala · Tropical
+      </div>
+      <div class="adv-wx">
+        <div class="adv-wx-box"><div class="adv-wx-v">32°C</div><div class="adv-wx-l">Temp</div></div>
+        <div class="adv-wx-box"><div class="adv-wx-v">78%</div><div class="adv-wx-l">Humidity</div></div>
+        <div class="adv-wx-box"><div class="adv-wx-v">🌤</div><div class="adv-wx-l">Monsoon</div></div>
+      </div>
+      <div class="adv-crop-lbl">Recommended this season</div>
+      <div class="adv-crop-r">
+        <span style="font-size:1.1rem">🫘</span>
+        <div style="flex:1"><div class="adv-crop-name">Moringa</div><div class="adv-crop-why">Thrives in tropical heat</div></div>
+        <span class="adv-crop-score">98%</span>
+      </div>
+      <div class="adv-crop-r">
+        <span style="font-size:1.1rem">🍅</span>
+        <div style="flex:1"><div class="adv-crop-name">Cherry Tomatoes</div><div class="adv-crop-why">Container-friendly</div></div>
+        <span class="adv-crop-score">91%</span>
+      </div>
+      <div class="adv-crop-r">
+        <span style="font-size:1.1rem">🌿</span>
+        <div style="flex:1"><div class="adv-crop-name">Curry Leaf</div><div class="adv-crop-why">Native tropical variety</div></div>
+        <span class="adv-crop-score">87%</span>
+      </div>
+      <div class="adv-crop-r">
+        <span style="font-size:1.1rem">🥬</span>
+        <div style="flex:1"><div class="adv-crop-name">Amaranth Greens</div><div class="adv-crop-why">Fast-growing, high yield</div></div>
+        <span class="adv-crop-score">84%</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ TESTIMONIALS ════════ -->
+<section id="testimonials">
+  <div class="testi-head">
+    <div class="sec-label reveal">💬 Loved by growers</div>
+    <h2 class="sec-title reveal reveal-delay-1">From balcony gardens<br><span>to urban farms</span></h2>
+  </div>
+  <div class="testi-grid">
+    <div class="testi-card reveal">
+      <div class="stars">⭐⭐⭐⭐⭐</div>
+      <div class="testi-quote">"Foxie told me my Monstera was craving humidity before I even noticed the leaf tips browning. The AI genuinely knows plants better than I do."</div>
+      <div class="testi-author">
+        <div class="testi-av" style="background:linear-gradient(135deg,var(--fox-400),var(--fox-600))">PL</div>
+        <div><div class="testi-name">Priya L.</div><div class="testi-handle">Balcony gardener · Mumbai</div></div>
+      </div>
+    </div>
+    <div class="testi-card reveal reveal-delay-1">
+      <div class="stars">⭐⭐⭐⭐⭐</div>
+      <div class="testi-quote">"The GreenID feature is incredible. I sold three plants and buyers could verify the entire care history on-chain. Total game changer for trust."</div>
+      <div class="testi-author">
+        <div class="testi-av" style="background:linear-gradient(135deg,var(--gr-400),var(--gr-600))">RK</div>
+        <div><div class="testi-name">Rauf K.</div><div class="testi-handle">Plant seller · Bengaluru</div></div>
+      </div>
+    </div>
+    <div class="testi-card reveal reveal-delay-2">
+      <div class="stars">⭐⭐⭐⭐⭐</div>
+      <div class="testi-quote">"The crop advisor suggested Moringa for my Kerala backyard and it was spot on. I'm harvesting weekly now. Never thought an app would change how I farm."</div>
+      <div class="testi-author">
+        <div class="testi-av" style="background:linear-gradient(135deg,var(--fox-500),var(--gr-500))">SK</div>
+        <div><div class="testi-name">Sudha K.</div><div class="testi-handle">Home farmer · Kozhikode</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ CTA ════════ -->
+<section id="cta">
+  <div class="cta-inner">
+    <span class="cta-mascot">🦊</span>
+    <div class="cta-badge">🌿 Join 12,000+ growers today</div>
+    <h2 class="cta-title">Your garden deserves<br>a digital soul</h2>
+    <p class="cta-sub">Start free. Track your plants, earn rewards, chat with Foxie, and give every plant a blockchain identity. No credit card needed.</p>
+    <div class="cta-btns">
+      <a href="plantfox_auth_landing.html" class="btn btn-white">Get Started Free</a>
+      <a href="plantfox_login.html" class="btn btn-outline-white">Sign In</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ FOOTER ════════ -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">
+        <div class="footer-brand-fox">🦊</div>
+        PlantFox
+      </div>
+      <div class="footer-tagline">AI-powered plant care with blockchain identity. Grow smarter, grow together.</div>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <ul>
+        <li><a href="#">My Garden</a></li>
+        <li><a href="#">GreenID</a></li>
+        <li><a href="#">Digital Twin</a></li>
+        <li><a href="#">Foxie AI</a></li>
+        <li><a href="#">Rewards</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Learn</h4>
+      <ul>
+        <li><a href="#">Crop Advisor</a></li>
+        <li><a href="#">Farming Guides</a></li>
+        <li><a href="#">Plant Library</a></li>
+        <li><a href="#">Community</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Privacy</a></li>
+        <li><a href="#">Terms</a></li>
+        <li><a href="#">API Docs</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2026 PlantFox. Built with 🌿 for growers everywhere.</div>
+    <div class="footer-socials">
+      <div class="social-btn">𝕏</div>
+      <div class="social-btn">in</div>
+      <div class="social-btn">gh</div>
+    </div>
+  </div>
+</footer>
+
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+// ═══ MOBILE SPLASH REDIRECT LOGIC ═══
+(function() {
+  var isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    || (window.innerWidth <= 768 && 'ontouchstart' in window);
+  if (isMobile) {
+    window.location.replace('plantfox_splash.html');
+  }
+})();
+
+// ═══ NAV ═══
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('scrolled',window.scrollY>20);
+});
+function toggleMobileMenu(){document.getElementById('mobile-menu').classList.toggle('open');}
+function closeMobileMenu(){document.getElementById('mobile-menu').classList.remove('open');}
+
+// ═══ SCROLL REVEAL ═══
+const revealEls=document.querySelectorAll('.reveal');
+const ro=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');ro.unobserve(e.target);}});
+},{threshold:.12});
+revealEls.forEach(el=>ro.observe(el));
+
+// ═══ AUTH MODAL ═══
+function openAuth(tab='register'){
+  document.getElementById('auth-overlay').classList.add('open');
+  switchAuthTab(tab);
+}
+function closeAuth(){document.getElementById('auth-overlay').classList.remove('open');}
+function switchAuthTab(tab){
+  document.getElementById('tab-login').classList.toggle('active',tab==='login');
+  document.getElementById('tab-register').classList.toggle('active',tab==='register');
+  document.getElementById('login-form').style.display=tab==='login'?'block':'none';
+  document.getElementById('register-form').style.display=tab==='register'?'block':'none';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAuth();});
+
+async function handleAuth(type){
+  const btn=document.querySelector('.modal-submit');
+  btn.textContent=type==='login'?'Signing in…':'Setting up your garden…';
+  btn.disabled=true;
+  // In production: POST to /auth/login or /auth/register
+  await new Promise(r=>setTimeout(r,1400));
+  closeAuth();
+  toast('🌱 Welcome to PlantFox! Redirecting to your garden…','s');
+  setTimeout(()=>{
+    // window.location.href='dashboard.html';
+    toast('👆 Open plantfox_dashboard_v2.html to see your dashboard!');
+  },2000);
+  btn.disabled=false;
+  btn.textContent=type==='login'?'Sign In →':'Create Account & Start Growing 🌱';
+}
+
+// ═══ GID ACTION ═══
+function gidAction(type){toast(`📥 GreenID ${type.toUpperCase()} download starting…`,'s');}
+
+// ═══ TOAST ═══
+function toast(msg,type=''){
+  const w=document.getElementById('toast-wrap');
+  const el=document.createElement('div');
+  el.className='toast-el'+(type?' '+type:'');el.textContent=msg;
+  w.appendChild(el);
+  setTimeout(()=>{el.style.animation='toastIn .3s ease reverse';setTimeout(()=>el.remove(),300);},3500);
+}
+
+// ═══ HERO PHONE ANIMATION ═══
+// Slight parallax on hero blobs
+document.addEventListener('mousemove',e=>{
+  const mx=(e.clientX/window.innerWidth-.5)*20;
+  const my=(e.clientY/window.innerHeight-.5)*15;
+  document.querySelectorAll('.blob').forEach((b,i)=>{
+    const d=(i+1)*.5;
+    b.style.transform=`translate(${mx*d}px,${my*d}px)`;
+  });
+});
+
+// ═══ SERVICE WORKER REGISTRATION ═══
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js');
+}
+
+</script>
+</body>
+</html>

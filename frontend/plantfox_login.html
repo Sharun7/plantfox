@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<script src="config.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PlantFox — Welcome Back</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16a34a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PlantFox">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gr-50:#eef8f2;--gr-100:#d1f0de;--gr-200:#a3dfc0;--gr-300:#5cc68a;
+  --gr-400:#28a85a;--gr-500:#16a34a;--gr-600:#14813b;--gr-700:#0e5e2b;
+  --fox-500:#ea6d1e;--fox-600:#c45512;--fox-700:#9a3f08;
+  --ink:#1a1a1a;--ink2:#3d3d3d;--ink3:#7a7a7a;--ink4:#b8b8b8;
+  --bg:#eef8f2;
+  --border:rgba(22,163,74,.15);--border2:rgba(22,163,74,.25);
+  --clay-sm:0 2px 0 rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.06);
+  --clay-xl:0 4px 0 rgba(0,0,0,.09),0 12px 40px rgba(0,0,0,.10);
+  --clay-green:0 3px 0 rgba(14,94,43,.45),0 8px 24px rgba(22,163,74,.2);
+  --r:16px;--r-lg:22px;--r-xl:28px;--r-2xl:40px;--r-pill:999px;
+  --font:'DM Sans',sans-serif;
+  --ease-clay:cubic-bezier(.34,1.56,.64,1);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --transition:.2s ease;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:16px;}
+body{
+  font-family:var(--font);background:var(--bg);color:var(--ink);
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:20px;position:relative;overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;top:-100px;right:-100px;
+  width:500px;height:500px;
+  background:radial-gradient(circle,rgba(34,197,94,.12) 0%,transparent 70%);
+  border-radius:50%;pointer-events:none;z-index:0;
+}
+body::after{
+  content:'';position:fixed;bottom:-80px;left:-80px;
+  width:400px;height:400px;
+  background:radial-gradient(circle,rgba(249,115,22,.08) 0%,transparent 70%);
+  border-radius:50%;pointer-events:none;z-index:0;
+}
+
+/* Back nav */
+.auth-nav{position:fixed;top:16px;left:16px;z-index:50;}
+.auth-nav__back{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:.82rem;font-weight:700;color:var(--ink3);
+  background:white;border:1px solid var(--border2);
+  padding:7px 14px;border-radius:var(--r-pill);
+  box-shadow:var(--clay-sm);transition:var(--transition);
+  text-decoration:none;
+}
+.auth-nav__back:hover{color:var(--gr-700);border-color:var(--gr-400);}
+
+/* Card */
+.auth-card{
+  background:white;border-radius:var(--r-2xl);
+  box-shadow:var(--clay-xl);
+  width:100%;max-width:420px;
+  overflow:hidden;border:1px solid var(--border);
+  position:relative;z-index:1;
+  animation:cardIn .5s var(--ease-clay) both;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
+
+.auth-strip{height:4px;background:var(--border);}
+.auth-strip-fill{height:100%;background:linear-gradient(90deg,var(--gr-500),var(--gr-300));width:100%;}
+
+.auth-body{padding:24px 28px 28px;}
+
+.auth-header{text-align:center;margin-bottom:20px;}
+
+.fox-avatar{
+  font-size:2.5rem;display:block;text-align:center;
+  margin-bottom:8px;
+  animation:float 3s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+.auth-title{font-size:1.5rem;font-weight:900;margin:10px 0 4px;}
+.auth-subtitle{color:var(--ink3);font-size:.875rem;}
+
+/* Error */
+.auth-error{
+  background:#FEF2F2;border:1px solid #FECACA;
+  border-radius:12px;padding:10px 14px;
+  font-size:.82rem;color:#B91C1C;
+  margin-bottom:14px;display:none;
+}
+.auth-error.show{display:block;animation:errIn .2s ease both;}
+@keyframes errIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+/* Form */
+.auth-form{display:flex;flex-direction:column;gap:12px;}
+.auth-field{display:flex;flex-direction:column;gap:5px;}
+.auth-label{font-size:.75rem;letter-spacing:.02em;font-weight:700;color:var(--ink2);}
+.auth-input-wrap{position:relative;}
+.auth-input-icon{
+  position:absolute;left:13px;top:50%;transform:translateY(-50%);
+  color:var(--ink4);display:flex;align-items:center;
+  font-size:1rem;pointer-events:none;
+}
+.auth-input-icon.right{left:auto;right:13px;pointer-events:all;cursor:pointer;background:none;border:none;}
+.auth-input{
+  width:100%;padding:10px 44px 10px 42px;
+  border:1.5px solid var(--border2);border-radius:12px;
+  font-size:.9rem;font-family:var(--font);
+  background:white;color:var(--ink);
+  outline:none;transition:border-color .2s,box-shadow .2s;
+}
+.auth-input:focus{border-color:var(--gr-500);box-shadow:0 0 0 3px rgba(22,163,74,.12);}
+.auth-input::placeholder{color:var(--ink4);}
+
+/* Buttons */
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px 24px;border-radius:var(--r-pill);
+  font-size:.875rem;font-weight:800;cursor:pointer;
+  transition:var(--transition);border:none;font-family:var(--font);
+  letter-spacing:.03em;width:100%;
+}
+.btn-primary{
+  background:var(--gr-500);color:white;
+  box-shadow:0 4px 0 var(--gr-700),var(--clay-green);
+  margin-top:8px;
+}
+.btn-primary:hover:not(:disabled){background:var(--gr-700);transform:translateY(-1px);}
+.btn-primary:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--gr-700);}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.btn-outline{
+  background:white;color:var(--ink2);
+  border:1.5px solid var(--border2);box-shadow:var(--clay-sm);
+}
+.btn-outline:hover{border-color:var(--gr-500);color:var(--gr-700);background:var(--gr-50);}
+
+.spinner{
+  width:18px;height:18px;
+  border:2px solid rgba(255,255,255,.4);
+  border-top-color:white;border-radius:50%;
+  display:inline-block;animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.auth-footer{margin-top:20px;text-align:center;}
+.auth-footer-text{font-size:.82rem;color:var(--ink3);margin-bottom:10px;}
+</style>
+</head>
+<body>
+
+<nav class="auth-nav">
+  <a href="plantfox_landing.html" class="auth-nav__back">← Home</a>
+</nav>
+
+<div class="auth-card">
+  <div class="auth-strip"><div class="auth-strip-fill"></div></div>
+
+  <div class="auth-body">
+    <div class="auth-header">
+      <span class="fox-avatar">🦊</span>
+      <h1 class="auth-title">Welcome Back</h1>
+      <p class="auth-subtitle">Enter the sanctuary</p>
+    </div>
+
+    <div class="auth-error" id="login-error"></div>
+
+    <form class="auth-form" id="login-form" onsubmit="doLogin(event)">
+      <div class="auth-field">
+        <label class="auth-label" for="login-id">EMAIL OR USERNAME</label>
+        <div class="auth-input-wrap">
+          <span class="auth-input-icon" id="id-icon">✉️</span>
+          <input id="login-id" type="text" class="auth-input"
+            placeholder="you@example.com or username"
+            autocomplete="username email" required autofocus
+            oninput="updateIdIcon(this.value)">
+        </div>
+      </div>
+
+      <div class="auth-field">
+        <label class="auth-label" for="login-pw">PASSWORD</label>
+        <div class="auth-input-wrap">
+          <span class="auth-input-icon">🔒</span>
+          <input id="login-pw" type="password" class="auth-input"
+            placeholder="Your password" autocomplete="current-password"
+            required style="padding-right:44px">
+          <button type="button" class="auth-input-icon right" id="pw-toggle"
+            onclick="togglePw()" aria-label="Toggle password visibility">👁</button>
+        </div>
+      </div>
+
+      <button type="submit" id="login-btn" class="btn btn-primary">
+        <span id="login-btn-text">LOG IN →</span>
+        <span id="login-spinner" class="spinner" style="display:none"></span>
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p class="auth-footer-text">New to PlantFox?</p>
+      <a href="plantfox_auth_landing.html" class="btn btn-outline">JOIN THE SANCTUARY</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = `${CONFIG.API}/api`;
+
+function updateIdIcon(val){ document.getElementById('id-icon').textContent = val.includes('@') ? '✉️' : '👤'; }
+
+function togglePw(){
+  const inp = document.getElementById('login-pw');
+  const btn = document.getElementById('pw-toggle');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+}
+
+function showError(msg){
+  const el = document.getElementById('login-error');
+  el.textContent = msg; el.classList.add('show');
+}
+function hideError(){ document.getElementById('login-error').classList.remove('show'); }
+
+function setLoading(v){
+  document.getElementById('login-btn').disabled = v;
+  document.getElementById('login-btn-text').style.display = v ? 'none' : 'inline';
+  document.getElementById('login-spinner').style.display = v ? 'inline-block' : 'none';
+}
+
+async function doLogin(e){
+  e.preventDefault(); hideError();
+  const identifier = document.getElementById('login-id').value.trim();
+  const password   = document.getElementById('login-pw').value;
+  if(!identifier || !password){ showError('Please enter your email / username and password.'); return; }
+
+  setLoading(true);
+  try {
+    const res = await fetch(`${API}/auth/login`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ identifier, password })
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.detail || 'Invalid credentials. Please try again.');
+    localStorage.setItem('pf_token', data.access_token);
+    window.location.href = 'plantfox_dashboard.html';
+  } catch(err){
+    showError(err.message);
+  } finally {
+    setLoading(false);
+  }
+}
+
+// If already logged in → redirect
+if(localStorage.getItem('pf_token')) window.location.href = 'plantfox_dashboard.html';
+</script>
+</body>
+</html>
